@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import Customer from './components/Customer';
 import CustomerAdd from './components/CustomerAdd';
 import './App.css';
@@ -33,20 +32,20 @@ class App extends Component{
     completed: 0
   }
 
-  componentDidMount(){
-    this.timer = setInterval(this.progress, 20);
+  componentDidMount(){// 프로그래스바 시간
+    this.timer = setInterval(this.progress, 20); 
     this.callApi()
       .then(res => this.setState({customers: res}))
       .catch(err => console.log(err));
   }
 
-  callApi = async () => {
+  callApi = async () => { //
     const response = await fetch('/api/customers');
     const body = await response.json();
     return body;
   }
 
-  progress = () => {
+  progress = () => { //프로그래스바 액션
     const { completed } = this.state;
     this.setState({ completed: completed >= 100 ? 0 : completed + 1})
   }
