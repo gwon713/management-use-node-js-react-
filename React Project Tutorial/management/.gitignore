@@ -1,7 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-#database
-/database.json
+#upload
+/upload
+
+#database  #데이터 베이스 파일이 깃에 전송되지 않게 해주는 부분
+/database.json 
 
 # dependencies
 /node_modules

@@ -2,7 +2,7 @@ import React from 'react';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 class Customer extends React.Component{
-    render(){
+    render(){ //화면에 출력되는 부분
         return(
             <TableRow>
                 <TableCell>{this.props.id}</TableCell>
@@ -13,7 +13,7 @@ class Customer extends React.Component{
                 <TableCell>{this.props.job}</TableCell>
             </TableRow>
         )
-    }
+    } //화면에 출력되는 부분
 }
 
-export default Customer;
+export default Customer; //다른 소스에서 Customer를 사용할 수 있도록 내보내기

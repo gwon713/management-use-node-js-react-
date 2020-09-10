@@ -27,12 +27,24 @@ const styles = theme => ({
 
 class App extends Component{
 
-  state = {
-    customers: "",
-    completed: 0
+  constructor(props){
+    super(props);
+    this.state = {
+      customers: '',
+      completed: 0
+    }
   }
 
-  componentDidMount(){// 프로그래스바 시간
+  stateRefresh = () => {
+    this.setState({
+      customers: '',
+      completed: 0
+    });
+    this.callApi()
+      .then(res => this.setState({customers: res}))
+      .catch(err => console.log(err));
+  }
+  componentDidMount(){// 프로그래스바 타이머
     this.timer = setInterval(this.progress, 20); 
     this.callApi()
       .then(res => this.setState({customers: res}))
@@ -78,10 +90,10 @@ class App extends Component{
             </TableBody>
           </Table>
         </Paper>
-        <CustomerAdd/>
+        <CustomerAdd stateRefresh={this.stateRefresh}/>
       </div>
     );
   }
 }
 
-export default withStyles(styles)(App);
+export default withStyles(styles)(App); //withStyle를 사용한 App을 내보내기
