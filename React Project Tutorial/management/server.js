@@ -25,7 +25,7 @@ const upload = multer({dest: './upload'}); //사진 업로드 설정 (사진 데
 
 app.get('/api/customers', (req, res)=>{ // 해당 url 로 접속할때 동작 설정
     connection.query(
-      "SELECT * FROM CUSTOMER",
+      "SELECT * FROM CUSTOMER WHERE isDeleted = 0",
       (err, rows, fields)=>{
         res.send(rows);
       }
@@ -35,20 +35,31 @@ app.get('/api/customers', (req, res)=>{ // 해당 url 로 접속할때 동작 �
 app.use('/image', express.static('./upload')); 
 
 app.post('/api/customers', upload.single('image'), (req, res) => { //post 방식 사용하여 데이터를 db에 저장
-  let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?)';
+  let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?, now(), 0)';
   let image = '/image/' + req.file.filename;
   let name = req.body.name;
   let birthday = req.body.birthday;
   let gender = req.body.gender;
   let job = req.body.job;
-  let params = [image, name, birthday, gender, job];
-  connection.query(sql, params,
+  let params = [image, name, birthday, gender, job];//데이터 전달 값 초기화
+  connection.query(sql, params,// DB전송
     (err, rows, fields) => {
-      res.send(rows);
-      console.log(err);
-      console.log(rows);
+      res.send(rows);// DB전송
+      console.log(err); // 에러 로그 출력
+      console.log(rows); // 전송된 값 출력
     }
   );
 });
 
+app.delete('/api/customers/:id', (req, res) => {
+  let sql = 'UPDATE CUSTOMER SET isDeleted = 1 WHERE id = ?'; //DB에 삭제완료 되었다는 값저장 구문
+  let params = [req.params.id]; //id 데이터 전달 값 초기화
+  connection.query(sql, params,// DB전송
+    (err, rows, fields) => {
+      res.send(rows); // DB전송
+      console.log(err); // 에러 로그 출력
+      console.log(rows); // 전송된 값 출력
+    }
+  );
+});
  app.listen(port, () => console.log(`Listening on port ${port}`));
