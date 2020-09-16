@@ -1,5 +1,5 @@
 {
-  "name": "management",
+  "name": "bus",
   "version": "1.0.0",
   "scripts": {
     "client": "cd client && yarn start",
