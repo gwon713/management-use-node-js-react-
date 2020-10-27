@@ -1,71 +1,89 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const app = express();
-const bodyParser = require('body-parser'); // 서버 기본 셋업
-const app = express(); // 서버 기본 셋업
-const port = process.env.PORT || 5000; // 포트번호 설정
-require('dotenv').config({path:'variables.env'});
+const express = require("express");
+require("dotenv").config({path:'variables.env'});
+const {User} = require('../management MongoDB/models/User');
 
-app.use(bodyParser.json()); // 서버 기본 셋업
-app.use(bodyParser.urlencoded({ extended: true})); // 서버 기본 셋업
+const app = express();
+const mongoose = require("mongoose");
+const bodyParser = require('body-parser'); // 서버 기본 셋업
+
+const port = process.env.PORT || 5000;
+
+// middleware
+// application/json
+app.use(express.json());
+// application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: false }));
 
 const multer = require('multer');
 const upload = multer({dest: './upload'}); //사진 업로드 설정 (사진 데이터 보관) => upload
 
-console.log(process.env.MONGODB_URL);
+// db connect
+mongoose
+  .connect(process.env.MONGODB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    dbName:"management"
+  })
+  .then(() => console.log(`mongoDB connected`))
+  .catch((err) => console.error(err));
 
-app.listen(3000, (err) => {
-  if (err) {
-    return console.log(err);
-  } else {
-    mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, (err) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log("Connected to database successfully");
-      }
+
+app.get("/api/customers", (req, res) => {
+  User
+  .find()
+  .then(rows => {
+    console.log("Read All 완료");
+    res.status(200).json(rows);
+  })
+  .catch(err => {
+    res.status(500).json({
+      message: err
     });
-  }
+  });
 });
 
-app.get('/api/customers', (req, res)=>{ // 해당 url 로 접속할때 동작 설정
-    connection.query(
-      "SELECT * FROM CUSTOMER WHERE isDeleted = 0",
-      
-      (err, rows, fields)=>{
-        res.send(rows);
+app.post('/api/customers', upload.single('image'), (req, res) => {
+    const {name, birthday, gender, job} = req.body;
+    const postUser = new User();
+    postUser.image = '/image/' + req.file.filename;
+    postUser.name = name;
+    postUser.birthday = birthday;
+    postUser.gender = gender;
+    postUser.job = job;
+    console.log(postUser); // 전송된 값 출력
+    console.log(req.file.filename); // 전송된 값 출력
+    postUser.save()
+    .then(newPost => {
+      {
+        console.log("Create Data")
+        res.json(newPost);
+        res.send(postUser.image);
       }
-    );
+    })
+    .catch(err => {
+      res.json({message: err});
+    })
 });
 
-app.use('/image', express.static('./upload')); 
+// app.delete('/api/customers/:id', (req, res) => {
+//   User
+//   .find()
+//   .then(rows => {
+//     console.log("Read All 완료");
+//     res.status(200).json(rows);
+//   })
+//   .catch(err => {
+//     res.status(500).json({
+//       message: err
+//     });
+//   });
+// });
 
-app.post('/api/customers', upload.single('image'), (req, res) => { //post 방식 사용하여 데이터를 db에 저장
-  let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?, now(), 0)';
-  let image = '/image/' + req.file.filename;
-  let name = req.body.name;
-  let birthday = req.body.birthday;
-  let gender = req.body.gender;
-  let job = req.body.job;
-  let params = [image, name, birthday, gender, job];//데이터 전달 값 초기화
-  connection.query(sql, params,// DB전송
-    (err, rows, fields) => {
-      res.send(rows);// DB전송
-      console.log(err); // 에러 로그 출력
-      console.log(rows); // 전송된 값 출력
-    }
-  );
-});
+app.listen(port, () =>
+  console.log(`Example app listening at http://localhost:${port}`)
+);
 
-app.delete('/api/customers/:id', (req, res) => {
-  let sql = 'UPDATE CUSTOMER SET isDeleted = 1 WHERE id = ?'; //DB에 삭제완료 되었다는 값저장 구문
-  let params = [req.params.id]; //id 데이터 전달 값 초기화
-  connection.query(sql, params,// DB전송
-    (err, rows, fields) => {
-      res.send(rows); // DB전송
-      console.log(err); // 에러 로그 출력
-      console.log(rows); // 전송된 값 출력
-    }
-  );
-});
+
 
