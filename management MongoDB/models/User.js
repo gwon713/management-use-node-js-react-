@@ -12,7 +12,10 @@ autoIncrement.initialize(connection);
 
 
 const userSchema = mongoose.Schema({
-    id:mongoose.Schema.Types.ObjectId,
+    id:{
+        type:mongoose.Schema.Types.ObjectId,
+        unique : true
+    },
     image:{
         type: String,
         required:true

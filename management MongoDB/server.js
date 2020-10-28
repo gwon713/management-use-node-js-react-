@@ -1,10 +1,9 @@
 const express = require("express");
 require("dotenv").config({path:'variables.env'});
-const router = express.Router();
 const {User} = require('../management MongoDB/models/User');
 const app = express();
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser"); // 서버 기본 셋업
+const bodyParser = require("body-parser");
 
 
 const port = process.env.PORT || 5000;
@@ -45,23 +44,25 @@ app.get("/api/customers", (req, res) => {
 app.use('/image', express.static('./upload')); 
 
 app.post('/api/customers', upload.single('image'), (req, res) => {
-  const { name, birthday, gender, job } = req.body;
   const postUser = new User();
   postUser.image = '/image/' + req.file.filename;
-  postUser.name = name;
-  postUser.birthday = birthday;
-  postUser.gender = gender;
-  postUser.job = job;  
+  postUser.name = req.body.name;
+  postUser.birthday = req.body.birthday;
+  postUser.gender = req.body.gender;
+  postUser.job = req.body.job;  
+  console.log(postUser);
+  const newPost = postUser.toJSON()
+  console.log(newPost);
   postUser.save()
-  .then(newPost => {
+  .then(newP => {
     {
-      res.status(200).json(newPost);
+      res.json(newP);
       console.log("Create Data");
-      console.log(newPost);
+      console.log(newP);
     }
   })
   .catch(err => {
-    res.status(500).json({
+    res.json({
       message: err
     });
   })
