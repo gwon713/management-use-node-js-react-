@@ -12,6 +12,7 @@ autoIncrement.initialize(connection);
 
 
 const userSchema = mongoose.Schema({
+    id:mongoose.Schema.Types.ObjectId,
     image:{
         type: String,
         required:true
@@ -35,6 +36,7 @@ const userSchema = mongoose.Schema({
     createdData:{
         type: Date,
         default:Date.now,
+        required:true
     }
 })
 

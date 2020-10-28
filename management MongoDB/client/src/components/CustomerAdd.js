@@ -66,7 +66,7 @@ class CustomerAdd extends React.Component{
         formData.append('birthday',this.state.birthday);
         formData.append('gender',this.state.gender);
         formData.append('job',this.state.job);
-
+        console.log(formData);
         const config = {
             headers: {
                 'content-type': 'multipart/form-data' //전송하는 데이터에 대한 설정 multipart에 form-data 양식으로 전송
