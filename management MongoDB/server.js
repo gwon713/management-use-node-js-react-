@@ -31,7 +31,7 @@ app.get("/api/customers", (req, res) => {
   User
   .find()
   .then(rows => {
-    console.log("Read All 완료");
+    console.log("Read complete");
     res.status(200).json(rows);
   })
   .catch(err => {
@@ -51,18 +51,16 @@ app.post('/api/customers', upload.single('image'), (req, res) => {
   postUser.gender = req.body.gender;
   postUser.job = req.body.job;  
   console.log(postUser);
-  const newPost = postUser.toJSON()
-  console.log(newPost);
   postUser.save()
   .then(newP => {
     {
-      res.json(newP);
+      res.status(200).json(newP);
       console.log("Create Data");
       console.log(newP);
     }
   })
   .catch(err => {
-    res.json({
+    res.status(500).json({
       message: err
     });
   })
